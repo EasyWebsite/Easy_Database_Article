@@ -1,0 +1,45 @@
+version: "2"
+services:
+  rabbit:
+    container_name: Easy_Rabbitmq
+    image: rabbitmq:3.6-management
+    ports:
+        - "15673:15672"
+    restart: always
+
+  postgres_article:
+    container_name: Easy_Postgres_Article
+    image: postgres
+    ports:
+        - "5434:5432"
+    environment:
+        POSTGRES_DB: "Easy_Database_Article"
+        POSTGRES_PASSWORD: "postgres"
+        POSTGRES_USER: "postgres"
+    restart: always
+
+  easy_database_article:
+    container_name: Easy_Database_Article
+    build: .
+    depends_on:
+      - rabbit
+      - postgres_article
+    ports:
+        - "8002:8000"
+    links:
+      - "rabbit:Easy_Rabbitmq"
+      - "postgres_article:Easy_Postgres_Article"
+    environment:
+        DB_PASSWORD: "postgres"
+        DB_USER: "postgres"
+        DB_HOST: "postgres"
+        DB_NAME: "Easy_Database_Article"
+        DB_PORT: 5432
+        RABBIT_PASSWORD: "guest"
+        RABBIT_USER: "guest"
+        RABBIT_HOST: "rabbit"
+        RABBIT_PORT: "5672"
+        RABBIT_MANAGEMENT_PORT: "15672"
+        DJANGO_ADMIN_USERNAME: "root"
+        DJANGO_ADMIN_PASSWORD: "admin123"
+        DJANGO_ADMIN_USEREMAIL: "r@r.com"
